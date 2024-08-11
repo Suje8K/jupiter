@@ -8,7 +8,7 @@ management:
 spring:
   data:
     mongodb:
-      uri: #{mongo-connection-uri}
+      uri: 'mongodb+srv://#{mongodb-username}:#{mongodb-password}@cluster0.gzaghmd.mongodb.net/#{mongodb-dbname}?retryWrites=true&w=majority&appName=Cluster0'
 logging:
   level:
     org.springframework: error
