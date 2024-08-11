@@ -1,0 +1,20 @@
+server:
+  port: 9010
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+spring:
+  data:
+    mongodb:
+      uri: #{mongo-connection-uri}
+logging:
+  level:
+    org.springframework: error
+    org.mongodb: error
+
+project:
+  spring:
+    username: #{default-username}
+    password: #{default-password}

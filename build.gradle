@@ -1,0 +1,74 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.0'
+    id 'io.spring.dependency-management' version '1.1.5'
+    id 'com.github.node-gradle.node' version "7.0.2"
+}
+
+group = 'in.sujeetk'
+version = '0.0.1-SNAPSHOT'
+
+node {
+    download = true
+    version = "20.9.0"
+    nodeProjectDir = file("${project.projectDir}/src/main/react")
+}
+
+java {
+    sourceCompatibility = '17'
+}
+
+// db - authserver, jupiter/N32v5kP1TrQQYTRA
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+task pnpmBuild(type: PnpmTask) {
+    group = 'pnpm'
+    args = ['run', 'build']
+}
+
+task deleteFolder(type: Delete) {
+    group = 'pnpm'
+    delete 'src/main/react/.next'
+    delete 'src/main/react/out'
+    delete 'src/main/react/dist'
+}
+
+task pnpmMoveBuildFiles (type: Copy) {
+    group = 'pnpm'
+    from 'src/main/react/out' into 'build/react'
+}
+
+task buildFull {
+    group = 'build'
+//    dependsOn pnpmInstall, pnpmBuild
+    dependsOn pnpmBuild, pnpmMoveBuildFiles
+    finalizedBy build, processResources, deleteFolder
+}
+
+processResources {
+    from ('build/react') {
+        into 'public'
+    }
+}
+

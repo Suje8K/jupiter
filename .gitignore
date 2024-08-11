@@ -1,0 +1,73 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+# Front End
+
+# dependencies
+/src/main/react/node_modules
+/src/main/react/.pnp
+/src/main/react/.pnp.js
+/src/main/react/.yarn/install-state.gz
+
+# testing
+/src/main/react/coverage
+
+# next.js
+/src/main/react/.next/
+/src/main/react/out/
+
+# production
+/src/main/react/build
+
+# misc
+/src/main/react/.DS_Store
+/src/main/react/*.pem
+
+# debug
+/src/main/react/npm-debug.log*
+/src/main/react/yarn-debug.log*
+/src/main/react/yarn-error.log*
+
+# local env files
+/src/main/react/.env*.local
+
+# vercel
+/src/main/react/.vercel
+
+# typescript
+/src/main/react/*.tsbuildinfo
+/src/main/react/next-env.d.ts

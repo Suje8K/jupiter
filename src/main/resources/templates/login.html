@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: rgb(57,57,57);
+            background: linear-gradient(0deg, rgba(57,57,57,1) 0%, rgba(160,161,255,1) 50%, rgba(69,191,252,1) 100%);
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            color: #333333;
+        }
+
+        .login-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .login-buttons a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        .google {
+            background-color: #dd4b39;
+        }
+
+        .github {
+            background-color: #24292e;
+        }
+
+        .default-login {
+            margin-top: 30px;
+        }
+
+        .default-login input[type="text"],
+        .default-login input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            box-sizing: border-box;
+            font-size: medium;
+        }
+
+        .default-login button {
+            width: 100%;
+            padding: 15px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .default-login button:hover {
+            background-color: #0056b3;
+        }
+
+        .forgot-password,
+        .register {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .forgot-password a,
+        .register a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .forgot-password a:hover,
+        .register a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Login</h2>
+    <div class="default-login">
+        <form th:action="@{/login}" method="post">
+            <input type="text" name="username" placeholder="Username" required><br>
+            <input type="password" name="password" placeholder="Password" required><br>
+            <button type="submit">Login</button>
+        </form>
+        <div class="forgot-password">
+            <a href="#">Forgot Password?</a>
+        </div>
+        <div class="register">
+            Don't have an account? <a href="#">Register</a>
+        </div>
+    </div>
+    <div class="login-buttons">
+        <a th:href="@{/login/google}" class="google"><i class="fab fa-google"></i> Login with Google</a>
+        <a th:href="@{/login/github}" class="github"><i class="fab fa-github"></i> Login with GitHub</a>
+    </div>
+
+</div>
+</body>
+</html>
