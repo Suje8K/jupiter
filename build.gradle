@@ -49,6 +49,7 @@ dependencies {
 
 task pnpmBuild(type: PnpmTask) {
     group = 'pnpm'
+    dependsOn pnpmInstall
     args = ['run', 'build']
 }
 
@@ -66,7 +67,6 @@ task pnpmMoveBuildFiles (type: Copy) {
 
 task buildFull {
     group = 'build'
-//    dependsOn pnpmInstall, pnpmBuild
     dependsOn pnpmBuild, pnpmMoveBuildFiles
     finalizedBy build, processResources, deleteFolder
 }
