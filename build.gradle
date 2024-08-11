@@ -16,6 +16,7 @@ node {
 
 java {
     sourceCompatibility = '17'
+    targetCompatibility = '17'
 }
 
 // db - authserver, jupiter/N32v5kP1TrQQYTRA
