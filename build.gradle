@@ -19,6 +19,10 @@ java {
     targetCompatibility = '17'
 }
 
+jar {
+    enabled = false
+}
+
 // db - authserver, jupiter/N32v5kP1TrQQYTRA
 
 configurations {
