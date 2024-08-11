@@ -6,7 +6,7 @@ management:
 spring:
   data:
     mongodb:
-      uri: 'mongodb+srv://#{mongodb-username}:#{mongodb-password}@cluster0.gzaghmd.mongodb.net/#{mongodb-dbname}?retryWrites=true&w=majority&appName=Cluster0'
+      uri: 'mongodb+srv://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@cluster0.gzaghmd.mongodb.net/${MONGODB_DBNAME}?retryWrites=true&w=majority&appName=Cluster0'
 logging:
   level:
     org.springframework: error
@@ -14,5 +14,5 @@ logging:
 
 project:
   spring:
-    username: #{default-username}
-    password: #{default-password}
+    username: ${SPRING_USERNAME}
+    password: ${SPRING_PASSWORD}
