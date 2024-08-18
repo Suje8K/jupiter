@@ -18,3 +18,5 @@ project:
   spring:
     username: ${SPRING_USERNAME}
     password: ${SPRING_PASSWORD}
+
+logging.level.org.springframework.web: DEBUG

@@ -19,7 +19,7 @@ const RootPage = async ({searchParams}: RootPageProps) => {
             'Content-Type': 'application/json'
         };
         const params = {
-            categoryId: '',
+            id: '',
             name: ''
         };
         const queryString = new URLSearchParams(params).toString();
