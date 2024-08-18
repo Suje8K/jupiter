@@ -49,7 +49,7 @@ export const Categories = ({ data }: CategoriesProps) => {
             >
                 Newest
             </button>
-            {data.map((item: any) => (
+            {data.data.map((item: any) => (
                 <button
                     onClick={() => onClick(item.id)}
                     key={item.id}

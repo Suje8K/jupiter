@@ -1,6 +1,8 @@
 package in.sujeetk.jupiter.service.impl;
 
+import in.sujeetk.jupiter.model.Category;
 import in.sujeetk.jupiter.model.Companion;
+import in.sujeetk.jupiter.repository.next.CategoryRepository;
 import in.sujeetk.jupiter.service.CompanionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,6 +22,9 @@ public class CompanionServiceImpl implements CompanionService {
     @Qualifier("mongoTemplateNext")
     private ReactiveMongoTemplate mongoTemplateNext;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     @Override
     public Mono<List<Companion>> fetchCompanion(String categoryId, String name) {
         Query query = new Query();
@@ -32,5 +37,10 @@ public class CompanionServiceImpl implements CompanionService {
         query.with(Sort.by(Sort.Order.desc("createdAt"))); // Sorting by createdAt in descending order
 
         return mongoTemplateNext.find(query, Companion.class).collectList();
+    }
+
+    @Override
+    public Mono<List<Category>> fetchCategory() {
+        return categoryRepository.findAll().collectList();
     }
 }

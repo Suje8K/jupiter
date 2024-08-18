@@ -1,6 +1,7 @@
 package in.sujeetk.jupiter.controller;
 
 import in.sujeetk.jupiter.dtos.ResponseDTO;
+import in.sujeetk.jupiter.model.Category;
 import in.sujeetk.jupiter.model.Companion;
 import in.sujeetk.jupiter.service.CompanionService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,11 @@ public class CompanionController {
 
     @GetMapping()
     public Mono<ResponseDTO<List<Companion>>> getCompanion(@RequestParam String id, @RequestParam String name) {
-        return companionService.fetchCompanion(id, name).map(resouces -> new ResponseDTO<>(HttpStatus.OK.value(), resouces, null));
+        return companionService.fetchCompanion(id, name).map(resources -> new ResponseDTO<>(HttpStatus.OK.value(), resources, null));
+    }
+
+    @GetMapping("/categories")
+    public Mono<ResponseDTO<List<Category>>> getCategory() {
+        return companionService.fetchCategory().map(resources -> new ResponseDTO<>(HttpStatus.OK.value(), resources, null));
     }
 }

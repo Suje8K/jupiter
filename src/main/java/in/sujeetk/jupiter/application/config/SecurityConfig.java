@@ -94,6 +94,7 @@ public class SecurityConfig {
         }
 
         http
+            .cors(Customizer.withDefaults())
             .authorizeHttpRequests(httpRequest -> httpRequest.requestMatchers(
                 EndpointRequest.to("health", "info", "prometheus")).authenticated())
             .authorizeHttpRequests((authorize) -> authorize
@@ -196,13 +197,12 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(allowedOrigins.split(",")));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
