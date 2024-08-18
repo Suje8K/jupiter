@@ -10,7 +10,7 @@ interface RootPageProps {
 }
 
 const RootPage = async ({searchParams}: RootPageProps) => {
-
+    let data = null;
     const fetchData = async () => {
         var url = process.env.API_URL;
         if (url == null)
@@ -23,7 +23,7 @@ const RootPage = async ({searchParams}: RootPageProps) => {
             name: ''
         };
         const queryString = new URLSearchParams(params).toString();
-        return fetch(`http://localhost:8080/api/v1/companion?${queryString}`, {
+        return fetch(url + `/api/v1/companion?${queryString}`, {
             method: 'GET',
             headers: headers,
         }).then(response => {
@@ -31,7 +31,9 @@ const RootPage = async ({searchParams}: RootPageProps) => {
         });
     }
 
-    const data = await fetchData();
+    if (process.env.NEXT_PUBLIC_SKIP_FETCH !== 'true') {
+        data = await fetchData();
+    }
 
     return (
         <div className="h-full p-4 space-y-2">
