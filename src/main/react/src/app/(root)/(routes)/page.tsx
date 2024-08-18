@@ -1,7 +1,7 @@
-import React from 'react';
-// import { Categories } from "@/components/categories";
-import { Companions } from "@/components/companions";
-import { SearchInput } from "@/components/search-input";
+import React, {Suspense} from 'react';
+import {Categories} from "@/components/categories";
+import {Companions} from "@/components/companions";
+import {SearchInput} from "@/components/search-input";
 
 interface RootPageProps {
     searchParams: {
@@ -10,7 +10,7 @@ interface RootPageProps {
     };
 }
 
-const RootPage = async ({ searchParams }: RootPageProps) => {
+const RootPage = async ({searchParams}: RootPageProps) => {
 
     const fetchData = async () => {
         const url = process.env.API_URL;
@@ -29,9 +29,11 @@ const RootPage = async ({ searchParams }: RootPageProps) => {
 
     return (
         <div className="h-full p-4 space-y-2">
-            <SearchInput/>
-            {/*<Categories data={categories}/>*/}
-            <Companions data={data}/>
+            <Suspense fallback={<div>Loading...</div>}>
+                <SearchInput/>
+                {/*<Categories data={categories}/>*/}
+                <Companions data={data}/>
+            </Suspense>
         </div>
     );
 };
