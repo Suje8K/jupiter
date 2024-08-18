@@ -1,7 +1,6 @@
 package in.sujeetk.jupiter.service.impl;
 
-import in.sujeetk.jupiter.repository.RegClientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import in.sujeetk.jupiter.repository.auth.RegClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,9 @@ public class RegisteredClientServiceImpl implements RegisteredClientRepository {
 
     @Override
     public RegisteredClient findByClientId(String clientId) {
-        Optional<RegisteredClient> registeredClient = regClientRepository.findAll().stream().filter(x -> x.getClientId().equals(clientId)).findFirst();
+        Optional<RegisteredClient> registeredClient = regClientRepository.findAll().filter(data ->
+            data.getClientId().equals(clientId)
+        ).next().blockOptional();
         return registeredClient.orElse(null);
     }
 }

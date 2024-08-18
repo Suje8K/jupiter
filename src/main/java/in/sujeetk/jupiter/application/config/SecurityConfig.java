@@ -1,5 +1,7 @@
 package in.sujeetk.jupiter.application.config;
 
+import com.mongodb.reactivestreams.client.MongoClient;
+import com.mongodb.reactivestreams.client.MongoClients;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -7,16 +9,20 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import in.sujeetk.jupiter.authentication.MongoUserDetailsManager;
 import in.sujeetk.jupiter.model.User;
-import in.sujeetk.jupiter.repository.UserRepository;
+import in.sujeetk.jupiter.repository.auth.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
-import org.springframework.data.mongodb.MongoDatabaseFactory;
-import org.springframework.data.mongodb.core.convert.DbRefResolver;
-import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
+import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory;
+import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
+import org.springframework.data.mongodb.core.convert.NoOpDbRefResolver;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
@@ -38,6 +44,7 @@ import org.springframework.security.oauth2.server.authorization.settings.ClientS
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import reactor.core.publisher.Mono;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -54,6 +61,12 @@ public class SecurityConfig {
 
     @Value("project.spring.password")
     String password;
+
+    @Value("${mongodb.uri}")
+    private String mongoUri;
+
+    @Value("${mongodb.dbname-auth}")
+    private String dbAuth;
 
     @Bean
     @Order(1)
@@ -87,7 +100,6 @@ public class SecurityConfig {
                 EndpointRequest.to("health", "info", "prometheus")).permitAll())
             .authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers("/login").permitAll()
-                .requestMatchers("/react/**").permitAll()
                 .anyRequest().authenticated()
             )
             // Form login handles the redirect to the login page from the
@@ -103,14 +115,18 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(UserRepository repository, RegisteredClientRepository registeredClientRepository) {
-        if (repository.existsById("sujeet")) {
-            System.out.println("User Exists");
-        } else {
-            PasswordEncoder pw = new BCryptPasswordEncoder();
-            repository.save(
-                User.builder().userId(username).password(pw.encode(password))
-                    .authorities(List.of(new SimpleGrantedAuthority("USER"))).build());
-        }
+        repository.existsById("sujeet")
+            .flatMap(userExists -> {
+                if (userExists) {
+                    System.out.println("User Exists");
+                } else {
+                    PasswordEncoder pw = new BCryptPasswordEncoder();
+                    repository.save(
+                        User.builder().userId(username).password(pw.encode(password))
+                            .authorities(List.of(new SimpleGrantedAuthority("USER"))).build());
+                }
+                return Mono.empty();
+            });
         saveRegisteredClient(registeredClientRepository);
         return new MongoUserDetailsManager(repository);
     }
@@ -131,11 +147,10 @@ public class SecurityConfig {
             .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
             .build();
         RegisteredClient registeredClient = repository.findByClientId(clientId);
-        if(registeredClient == null) {
+        if (registeredClient == null) {
             System.out.println("Unable to find Registered client.");
             repository.save(oidcClient);
-        }
-        else {
+        } else {
             System.out.println("Registered client exist.. -> " + registeredClient.getClientId());
         }
     }
@@ -181,11 +196,30 @@ public class SecurityConfig {
     }
 
     @Bean
-    public MappingMongoConverter mongoConverter(MongoDatabaseFactory mongoFactory, MongoMappingContext mongoMappingContext) throws Exception {
-        DbRefResolver dbRefResolver = new DefaultDbRefResolver(mongoFactory);
-        MappingMongoConverter mongoConverter = new MappingMongoConverter(dbRefResolver, mongoMappingContext);
-        mongoConverter.setMapKeyDotReplacement(".");
+    public MongoClient mongoClient() {
+        return MongoClients.create(mongoUri);
+    }
 
-        return mongoConverter;
+    @Primary
+    @Bean
+    public ReactiveMongoTemplate reactiveMongoTemplate(ReactiveMongoDatabaseFactory mongoFactory) {
+        return new ReactiveMongoTemplate(mongoFactory);
+    }
+
+    @Primary
+    @Bean
+    public ReactiveMongoDatabaseFactory mongoFactoryAuth(MongoClient mongoClient) {
+        return new SimpleReactiveMongoDatabaseFactory(mongoClient, dbAuth);
+    }
+
+    @Primary
+    @Bean
+    public MappingMongoConverter mongoConverter(ReactiveMongoDatabaseFactory mongoFactory,
+                                                MongoMappingContext mongoMappingContext,
+                                                MongoCustomConversions conversions) {
+        MappingMongoConverter converter = new MappingMongoConverter(NoOpDbRefResolver.INSTANCE, mongoMappingContext);
+        converter.setCustomConversions(conversions);
+        converter.setTypeMapper(new DefaultMongoTypeMapper(null)); // Removes _class field from MongoDB documents
+        return converter;
     }
 }

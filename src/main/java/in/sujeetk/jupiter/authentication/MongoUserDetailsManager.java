@@ -1,7 +1,7 @@
 package in.sujeetk.jupiter.authentication;
 
 import in.sujeetk.jupiter.model.User;
-import in.sujeetk.jupiter.repository.UserRepository;
+import in.sujeetk.jupiter.repository.auth.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public class MongoUserDetailsManager implements UserDetailsManager, UserDetailsPasswordService {
 
-    UserRepository userRepository;
+    final UserRepository userRepository;
 
     public MongoUserDetailsManager(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -54,7 +54,7 @@ public class MongoUserDetailsManager implements UserDetailsManager, UserDetailsP
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> mongoUser = userRepository.findById(username);
+        Optional<User> mongoUser = userRepository.findById(username).blockOptional();
         if (mongoUser.isPresent()) {
             System.out.println("User found");
             return mongoUser.get();
