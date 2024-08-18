@@ -22,8 +22,12 @@ const RootPage = async ({searchParams}: RootPageProps) => {
             name: ''
         };
         const queryString = new URLSearchParams(params).toString();
+        let url = process.env.NEXT_PUBLIC_BACKEND_URL;
+        console.log(url);
+        if(!url)
+            url = "";
         try {
-            return fetch(`http://127.0.0.1:8080/api/v1/companion?${queryString}`, {
+            return fetch(url + `/companion?${queryString}`, {
                 method: 'GET',
                 headers: headers,
             }).then(response => {

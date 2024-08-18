@@ -107,17 +107,9 @@ public class SecurityConfig {
 
         http
             .authorizeHttpRequests(httpRequest -> httpRequest.requestMatchers(
-                EndpointRequest.to("health", "info", "prometheus")).permitAll())
+                EndpointRequest.to("health", "info", "prometheus")).authenticated())
             .authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers("/login").permitAll()
-                .requestMatchers("/api/v1/companion/**").access((authentication, request) -> {
-                    String remoteAddr = request.getRequest().getRemoteAddr();
-                    if (serverIp.equals(remoteAddr)) {
-                        return new AuthorizationDecision(true);
-                    } else {
-                        return new AuthorizationDecision(false);
-                    }
-                })
                 // Require authentication for all other requests
                 .anyRequest().authenticated()
             )
