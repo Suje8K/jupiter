@@ -17,6 +17,7 @@ logging:
     org.mongodb: error
 
 project:
+  allowed-origins: 'https://*.sujeetk.in,https://sujeetk.in'
   spring:
     username: ${SPRING_USERNAME}
     password: ${SPRING_PASSWORD}
