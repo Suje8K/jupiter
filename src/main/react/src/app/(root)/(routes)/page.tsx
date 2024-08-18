@@ -1,7 +1,39 @@
-import Image from "next/image";
+import React from 'react';
+// import { Categories } from "@/components/categories";
+import { Companions } from "@/components/companions";
+import { SearchInput } from "@/components/search-input";
 
-export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24"></main>
-  );
+interface RootPageProps {
+    searchParams: {
+        categoryId?: string;
+        name?: string;
+    };
 }
+
+const RootPage = async ({ searchParams }: RootPageProps) => {
+
+    const fetchData = async () => {
+        const url = process.env.API_URL;
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        return fetch(url + '/api/v1/companion?id=&name=', {
+            method: 'GET',
+            headers: headers,
+        }).then(response => {
+            return response.json();
+        });
+    }
+
+    const data = await fetchData();
+
+    return (
+        <div className="h-full p-4 space-y-2">
+            <SearchInput/>
+            {/*<Categories data={categories}/>*/}
+            <Companions data={data}/>
+        </div>
+    );
+};
+
+export default RootPage;
