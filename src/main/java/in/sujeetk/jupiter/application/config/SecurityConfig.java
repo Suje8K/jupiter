@@ -25,6 +25,7 @@ import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.convert.NoOpDbRefResolver;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -46,6 +47,8 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import reactor.core.publisher.Mono;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
@@ -95,11 +98,27 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
         throws Exception {
+        String serverIp;
+        try {
+            serverIp = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException("Failed to get server IP address", e);
+        }
+
         http
             .authorizeHttpRequests(httpRequest -> httpRequest.requestMatchers(
                 EndpointRequest.to("health", "info", "prometheus")).permitAll())
             .authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers("/login").permitAll()
+                .requestMatchers("/api/v1/companion/**").access((authentication, request) -> {
+                    String remoteAddr = request.getRequest().getRemoteAddr();
+                    if (serverIp.equals(remoteAddr)) {
+                        return new AuthorizationDecision(true);
+                    } else {
+                        return new AuthorizationDecision(false);
+                    }
+                })
+                // Require authentication for all other requests
                 .anyRequest().authenticated()
             )
             // Form login handles the redirect to the login page from the
