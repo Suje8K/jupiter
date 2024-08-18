@@ -1,5 +1,4 @@
 import React, {Suspense} from 'react';
-import {Categories} from "@/components/categories";
 import {Companions} from "@/components/companions";
 import {SearchInput} from "@/components/search-input";
 
@@ -13,11 +12,18 @@ interface RootPageProps {
 const RootPage = async ({searchParams}: RootPageProps) => {
 
     const fetchData = async () => {
-        const url = process.env.API_URL;
+        var url = process.env.API_URL;
+        if (url == null)
+            url = ""
         const headers = {
             'Content-Type': 'application/json'
         };
-        return fetch(url + '/api/v1/companion?id=&name=', {
+        const params = {
+            categoryId: '',
+            name: ''
+        };
+        const queryString = new URLSearchParams(params).toString();
+        return fetch(`http://localhost:8080/api/v1/companion?${queryString}`, {
             method: 'GET',
             headers: headers,
         }).then(response => {
