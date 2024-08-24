@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 
 interface CategoriesProps {
-    data: any;
+    data: CategoriesProps;
 }
 
 export const Categories = ({ data }: CategoriesProps) => {
@@ -49,7 +49,7 @@ export const Categories = ({ data }: CategoriesProps) => {
             >
                 Newest
             </button>
-            {data.data.map((item: any) => (
+            {data && data.map((item: any) => (
                 <button
                     onClick={() => onClick(item.id)}
                     key={item.id}

@@ -1,9 +1,9 @@
 "use client"
 
-import React, {Suspense} from 'react';
-import {Companions} from "@/components/companions";
-import {Categories} from "@/components/categories";
-import {SearchInput} from "@/components/search-input";
+import React, { useState, useEffect } from 'react';
+import { Companions } from "@/components/companions";
+import { Categories } from "@/components/categories";
+import { SearchInput } from "@/components/search-input";
 
 interface RootPageProps {
     searchParams: {
@@ -12,71 +12,66 @@ interface RootPageProps {
     };
 }
 
-const RootPage = async ({searchParams}: RootPageProps) => {
-    let companions = [];
-    let categories = [];
+const RootPage = ({ searchParams }: RootPageProps) => {
+    const [companions, setCompanions] = useState<any[]>([]);
+    const [categories, setCategories] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
     const headers = {
         'Content-Type': 'application/json'
     };
 
-    let url = process.env.NEXT_PUBLIC_BACKEND_URL;
-    console.log(url);
-
-    if(!url)
-        url = "";
+    let url = process.env.NEXT_PUBLIC_BACKEND_URL || "";
 
     const fetchData = async () => {
         try {
-            const queryString = new URLSearchParams(searchParams).toString()
-            return fetch(url + `/companion?${queryString}`, {
-                method: 'GET',
-                headers: headers,
-            }).then(response => {
-                const contentType = response.headers.get('Content-Type');
-                if (contentType && contentType.includes('application/json')) {
-                    return response.json();
-                } else {
-                    return [];
-                }
-            });
+            const queryString = new URLSearchParams(searchParams as any).toString();
+            const response = await fetch(`${url}/companion?${queryString}`, { method: 'GET', headers });
+            const contentType = response.headers.get('Content-Type');
+            if (contentType && contentType.includes('application/json')) {
+                const data = await response.json();
+                setCompanions(data);
+            } else {
+                setCompanions([]);
+            }
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error);
-            return [];
+            setError('Failed to fetch companions');
         }
-    }
+    };
 
     const fetchCategories = async () => {
         try {
-            return fetch(url + `/companion/categories`, {
-                method: 'GET',
-                headers: headers,
-            }).then(response => {
-                const contentType = response.headers.get('Content-Type');
-                if (contentType && contentType.includes('application/json')) {
-                    return response.json();
-                } else {
-                    return [];
-                }
-            });
+            const response = await fetch(`${url}/companion/categories`, { method: 'GET', headers });
+            const contentType = response.headers.get('Content-Type');
+            if (contentType && contentType.includes('application/json')) {
+                const data = await response.json();
+                setCategories(data);
+            } else {
+                setCategories([]);
+            }
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error);
-            return [];
+            setError('Failed to fetch categories');
         }
-    }
+    };
 
-    try {
-        companions = await fetchData();
-        categories = await fetchCategories();
-    } catch (e) {
-        console.log(e);
-    }
+    useEffect(() => {
+        const fetchDataAndCategories = async () => {
+            setLoading(true);
+            await Promise.all([fetchData(), fetchCategories()]);
+            setLoading(false);
+        };
+
+        fetchDataAndCategories();
+    }, [searchParams]);
+
     return (
         <div className="h-full p-4 space-y-2">
-            <Suspense fallback={<div>Loading...</div>}>
-                <SearchInput/>
-                <Categories data={categories}/>
-                <Companions data={companions}/>
-            </Suspense>
+            <SearchInput/>
+            <Categories data={categories.data}/>
+            <Companions data={companions.data}/>
         </div>
     );
 };
