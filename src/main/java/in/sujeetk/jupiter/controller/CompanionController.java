@@ -24,7 +24,8 @@ public class CompanionController {
     CompanionService companionService;
 
     @GetMapping()
-    public Mono<ResponseDTO<List<Companion>>> getCompanion(@RequestParam String id, @RequestParam String name) {
+    public Mono<ResponseDTO<List<Companion>>> getCompanion(@RequestParam(name = "categoryId", required = false) String id,
+                                                           @RequestParam(name = "name", required = false) String name) {
         return companionService.fetchCompanion(id, name).map(resources -> new ResponseDTO<>(HttpStatus.OK.value(), resources, null));
     }
 
