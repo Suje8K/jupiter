@@ -42,7 +42,7 @@ export const Companions = ({ data }: CompanionsProps) => {
                             <p className="lowercase">@{item.userName}</p>
                             <div className="flex items-center">
                                 <MessageSquare className="w-3 h-3 mr-1" />
-                                {"_count"}
+                                {item.messageCount}
                             </div>
                         </CardFooter>
                     </Link>

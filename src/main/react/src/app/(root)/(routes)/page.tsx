@@ -13,23 +13,21 @@ interface RootPageProps {
 }
 
 const RootPage = async ({searchParams}: RootPageProps) => {
-    let companions = null;
-    let categories = null;
+    let companions = [];
+    let categories = [];
     const headers = {
         'Content-Type': 'application/json'
     };
-    const params = {
-        id: '',
-        name: ''
-    };
-    const queryString = new URLSearchParams(params).toString();
+
     let url = process.env.NEXT_PUBLIC_BACKEND_URL;
     console.log(url);
+
     if(!url)
         url = "";
 
     const fetchData = async () => {
         try {
+            const queryString = new URLSearchParams(searchParams).toString()
             return fetch(url + `/companion?${queryString}`, {
                 method: 'GET',
                 headers: headers,
@@ -46,6 +44,7 @@ const RootPage = async ({searchParams}: RootPageProps) => {
             return [];
         }
     }
+
     const fetchCategories = async () => {
         try {
             return fetch(url + `/companion/categories`, {
@@ -69,8 +68,6 @@ const RootPage = async ({searchParams}: RootPageProps) => {
         companions = await fetchData();
         categories = await fetchCategories();
     } catch (e) {
-        companions = [];
-        categories = [];
         console.log(e);
     }
     return (

@@ -12,6 +12,6 @@ import java.time.Instant;
 @Document("Category")
 public class Category {
     @Id
-    String mongoId;
+    String id;
     String name;
 }

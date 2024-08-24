@@ -25,4 +25,5 @@ public class Companion {
     String categoryId;
     String modeldesc;
     String modelname;
+    Long messageCount;
 }
