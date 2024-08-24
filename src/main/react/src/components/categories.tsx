@@ -3,10 +3,10 @@ import { cn } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 
 interface CategoriesProps {
-    data: CategoriesProps;
+    data: any;
 }
 
-export const Categories = ({ data }: CategoriesProps) => {
+export const Categories = ({ data }: any) => {
     const router = useRouter();
     const searchParams = useSearchParams();
 

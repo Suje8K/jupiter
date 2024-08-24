@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { Companions } from "@/components/companions";
 import { Categories } from "@/components/categories";
 import { SearchInput } from "@/components/search-input";
@@ -13,8 +13,8 @@ interface RootPageProps {
 }
 
 const RootPage = ({ searchParams }: RootPageProps) => {
-    const [companions, setCompanions] = useState<any[]>([]);
-    const [categories, setCategories] = useState<any[]>([]);
+    const [companions, setCompanions] = useState<any>({});
+    const [categories, setCategories] = useState<any>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -68,11 +68,13 @@ const RootPage = ({ searchParams }: RootPageProps) => {
     }, [searchParams]);
 
     return (
-        <div className="h-full p-4 space-y-2">
-            <SearchInput/>
-            <Categories data={categories.data}/>
-            <Companions data={companions.data}/>
-        </div>
+        <Suspense fallback={<div>Loading components...</div>}>
+            <div className="h-full p-4 space-y-2">
+                <SearchInput/>
+                <Categories data={categories.data}/>
+                <Companions data={companions.data}/>
+            </div>
+        </Suspense>
     );
 };
 
